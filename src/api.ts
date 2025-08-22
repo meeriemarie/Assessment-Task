@@ -2,8 +2,8 @@ import type {IApiResponse} from './types/Person.ts';
 
 const API_BASE_URL = 'api/persons';
 
-export async function fetchPersons(searchTerm: string): Promise<IApiResponse> {
-  const url = `${API_BASE_URL}?page=1&size=100&label=${encodeURIComponent(searchTerm)}`;
+export async function fetchPersons(searchTerm: string, page: number = 1): Promise<IApiResponse> {
+  const url = `${API_BASE_URL}?page=${page}&size=100&label=${encodeURIComponent(searchTerm)}`;
   const response = await fetch(url);
 
   if (!response.ok) {

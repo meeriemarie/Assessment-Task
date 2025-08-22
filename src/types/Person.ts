@@ -10,7 +10,7 @@ export interface IPerson {
 
 export interface IApiResponse {
   items: IPerson[];
-  total?: number;
+  total: number;
   page?: number;
   size?: number;
   pages?: number;

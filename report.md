@@ -14,13 +14,13 @@ This report summarizes the findings and progress of the assessment task.
 
 The project began by setting up a git repository. Then, a React 18 application was chosen as the sites framework and initialized using a Vite TypeScript template.
 
-The logic was built upon React's components and hooks, specifically "useState" for managing the search term, loading state, errors and results. "useEffect" was used for handling API calls. Fetching was made asynchronoulsy to the API. Unfortunately, access to the API was not possible from the localhost server, so a proxy was installed to circumvent the network errors. Finally, interfaces  were created to ensure type safety and matching the structure of the json response.
+The logic was built upon React's components and hooks, specifically "useState" for managing the search term, loading state, errors, pagination and results. "useEffect" was used for handling API calls, especially when triggering new API requests for page changes. Fetching was made asynchronoulsy to the API. Unfortunately, access to the API was not possible from the localhost server, so a proxy was installed to circumvent the network errors. Finally, interfaces  were created to ensure type safety and matching the structure of the json response.
 
 The application uses components, such as the PersonCard and ResultList component to keep the code clear and customizable in the future. The components use "tsx" syntax and the application was styled using Tailwind.
 
 ## Results
 
-The search application was successful after experiencing issues at first with the items array being empty. The site gives users also feedback based on Network connection or whether or not the person being searched is found. The result is a list or card components, with information such as the UUID, name and sources.
+The search application was successful after experiencing issues at first with the items array being empty. The site gives users also feedback based on Network connection or whether or not the person being searched is found. The result is a list of card components, with information such as the UUID, name and sources. While Pagination was implemented on the frond-end and the logic is working, there seems to still be an issue with the API, leading to results staying the same as on page 1.
 
 ## Reflection of the API
 - There is an inconsistency between the search parameter and the response body. The "label" parameter is nested inside the "sources" array, which requires additional logic. A better solution would be to place the "label" as a top level property.

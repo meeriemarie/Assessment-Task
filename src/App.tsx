@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import './styles/App.css';
 import ResultList from './components/ResultList';
-import SearchBar from './components/SearchBar'; // Import SearchBar
-import { fetchPersons } from './api'; // Import the new API function
+import SearchBar from './components/SearchBar';
+import Pagination from './components/Pagination';
+import { fetchPersons } from './api';
 import type { IPerson } from './types/Person';
 
 function App() {
@@ -11,23 +12,38 @@ function App() {
   const [persons, setPersons] = useState<IPerson[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
+    setCurrentPage(1);
+    performSearch(searchTerm, 1);
+  };
 
-    if (!searchTerm.trim()) {
+  const handlePageChange = (page: number) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+      performSearch(lastSearched, page);
+    }
+  };
+
+  const performSearch = async (term: string, page: number) => {
+    if (!term.trim()) {
       setPersons([]);
       setLastSearched('');
+      setTotalPages(0);
       return;
     }
 
     setLoading(true);
     setError(null);
-    setLastSearched(searchTerm);
+    setLastSearched(term);
 
     try {
-      const data = await fetchPersons(searchTerm);
+      const data = await fetchPersons(term, page);
       setPersons(data.items);
+      setTotalPages(Math.ceil(data.total / 100));
     } catch (err: any) {
       console.error("Failed to fetch persons:", err);
       setError(err.message);
@@ -59,9 +75,12 @@ function App() {
         />
         {message}
       </div>
-      <ResultList
-        persons={persons}
-      />
+      {persons.length > 0 && <ResultList persons={persons} />}
+      {totalPages > 1 && <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />}
     </div>
   );
 }
