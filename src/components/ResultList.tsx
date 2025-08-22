@@ -6,10 +6,10 @@ interface ResultListProps {
     persons: IPerson[];
     loading: boolean;
     error: string | null;
-    searchTerm: string;
+    lastSearched: string;
 }
 
-const ResultList: React.FC<ResultListProps> = ({ persons, loading, error, searchTerm }) => {
+const ResultList: React.FC<ResultListProps> = ({ persons, loading, error, lastSearched }) => {
     if (loading) {
         return <p>Loading persons...</p>;
     }
@@ -18,11 +18,11 @@ const ResultList: React.FC<ResultListProps> = ({ persons, loading, error, search
         return <p style={{ color: 'red' }}>Error: {error}</p>;
     }
 
-    if (persons.length === 0 && searchTerm.trim()) {
-        return <p>No persons found for "{searchTerm}".</p>;
+    if (persons.length === 0 && lastSearched.trim() !== '') {
+        return <p>No persons found for "{lastSearched}".</p>;
     }
 
-    if (persons.length === 0 && !searchTerm.trim()) {
+    if (lastSearched.trim() === '') {
         return <p>Start typing to search for persons.</p>;
     }
 
