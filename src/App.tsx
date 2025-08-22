@@ -36,19 +36,31 @@ function App() {
     }
   };
 
+  let message;
+  if (loading) {
+    message = <p className='text-blue-200'>Loading persons...</p>;
+  } else if (error) {
+    message = <p className='text-red-600'>Error: {error}</p>;
+  } else if (persons.length === 0 && lastSearched.trim() !== '') {
+    message = <p className='text-blue-200'>No persons found for "{lastSearched}".</p>;
+  } else if (lastSearched.trim() === '') {
+    message = <p className='text-blue-200'>Start typing to search for persons.</p>;
+  }
+
+
   return (
-    <div className='font-body text-base text-center pt-20'>
-      <h1 className='font-display text-4xl m-8'>Prosopographical Research Platform Search</h1>
-      <SearchBar
-        searchTerm={searchTerm}
-        onSearch={handleSearch}
-        onSearchTermChange={(e) => setSearchTerm(e.target.value)}
-      />
+    <div>
+      <div className='font-body text-base text-center pt-10 pb-10 bg-sky-900'>
+        <h1 className=' text-white font-display text-4xl m-8'>Prosopographical Research Platform Search</h1>
+        <SearchBar
+          searchTerm={searchTerm}
+          onSearch={handleSearch}
+          onSearchTermChange={(e) => setSearchTerm(e.target.value)}
+        />
+        {message}
+      </div>
       <ResultList
         persons={persons}
-        loading={loading}
-        error={error}
-        lastSearched={lastSearched}
       />
     </div>
   );
