@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import './App.css';
+import './styles/App.css';
 import type { IApiResponse, IPerson } from './types/Person';
+import ResultList from './components/ResultList';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -8,12 +9,11 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  //const API_BASE_URL = 'https://pfp-api.acdh-ch-dev.oeaw.ac.at/persons';
+  const API_BASE_URL = 'api/persons';
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Do nothing if the search term is empty or just whitespace
     if (!searchTerm.trim()) {
       setPersons([]);
       return;
@@ -23,28 +23,36 @@ function App() {
     setError(null);
 
     try {
-      // const url = `${API_BASE_URL}&page=1&size=100?label=${encodeURIComponent(searchTerm)}`;
-      const response = await fetch('/public/data/persons.json');
+      const url = `${API_BASE_URL}?page=1&size=100&label=${encodeURIComponent(searchTerm)}`;
+      const response = await fetch(url);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Attempt to read the error message from the response body
+        const errorData = await response.json();
+        
+        if (response.status === 422 && errorData.detail) {
+          // If it's a validation error, extract the specific messages
+          const validationMessages = errorData.detail.map((err: any) => err.msg).join('; ');
+          throw new Error(`Validation Error: ${validationMessages}`);
+        } else {
+          // For other HTTP errors, use the status code and a generic message
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
       }
       
-      // const data: IApiResponse = await response.json();
-      const data = await response.json();
+      const data: IApiResponse = await response.json();
       console.log("API Response:", data);
       setPersons(data.items);
       
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch persons:", err);
-      setError("Failed to load data. Please check your network or try again.");
+      setError(err.message); // Set the error state with the specific message
     } finally {
       setLoading(false);
     }
   };
-
   return (
-    <div style={{ padding: '20px' }}>
+     <div style={{ padding: '20px' }}>
       <h1>Prosopographical Research Platform Search</h1>
       <form onSubmit={handleSearch}>
         <input
@@ -57,36 +65,12 @@ function App() {
         <button type="submit" style={{ padding: '8px 15px' }}>Search</button>
       </form>
 
-      {loading && <p>Loading persons...</p>}
-      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
-
-      <div style={{ marginTop: '20px' }}>
-        {persons.length > 0 ? (
-          <ul>
-            {persons.map((person) => (
-              <li key={person.uuid} style={{ marginBottom: '15px', border: '1px solid #ccc', padding: '10px' }}>
-                {/* As no top-level label is returned, use the label from the first source */}
-                <h3>{person.sources[0]?.label || 'No Label Available'} (UUID: {person.uuid})</h3>
-                {person.sources && person.sources.length > 0 && (
-                  <div>
-                    <h4>Sources:</h4>
-                    <ul>
-                      {person.sources.map((source, index) => (
-                        <li key={index}>
-                          <a href={source.source} target="_blank" rel="noopener noreferrer">{source.label}</a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          !loading && !error && searchTerm.trim() && <p>No persons found for "{searchTerm}".</p>
-        )}
-        {!loading && !error && !searchTerm.trim() && <p>Start typing to search for persons.</p>}
-      </div>
+      <ResultList
+        persons={persons}
+        loading={loading}
+        error={error}
+        searchTerm={searchTerm}
+      />
     </div>
   );
 }
