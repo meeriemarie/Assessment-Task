@@ -52,8 +52,8 @@ function App() {
     }
   };
   return (
-     <div style={{ padding: '20px' }}>
-      <h1>Prosopographical Research Platform Search</h1>
+     <div className='font-body text-base' style={{ padding: '20px' }}>
+      <h1 className='font-display text-2xl'>Prosopographical Research Platform Search</h1>
       <form onSubmit={handleSearch}>
         <input
           type="text"
