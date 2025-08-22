@@ -20,8 +20,8 @@ The application uses components, such as the PersonCard and ResultList component
 
 ## Results
 
-The search application was successful after experiencing issues at first with the items array being empty.
+The search application was successful after experiencing issues at first with the items array being empty. The site gives users also feedback based on Network connection or whether or not the person being searched is found. The result is a list or card components, with information such as the UUID, name and sources.
 
-## Conclusion
+## Refflection of the API
 
 
