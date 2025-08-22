@@ -61,6 +61,8 @@ function App() {
     message = <p className='text-blue-200'>No persons found for "{lastSearched}".</p>;
   } else if (lastSearched.trim() === '') {
     message = <p className='text-blue-200'>Start typing to search for persons.</p>;
+  } else if (persons.length > 0) {
+    message = <p className='text-blue-200'>Results for "{lastSearched}"</p>;
   }
 
 
